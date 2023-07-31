@@ -72,6 +72,30 @@ namespace Engine
 		const wchar_t* m_pTargetTag = nullptr;
 	};
 
+	class CTag_Finder_Char
+	{
+	public:
+		explicit CTag_Finder_Char(const char* pTag)
+			: m_pTargetTag(pTag)
+		{
+		}
+		~CTag_Finder_Char() {		}
+	public:
+		template<typename T>
+		bool operator()(const T& pair)
+		{
+			if (0 == strcmp(m_pTargetTag, pair.first))
+			{
+				return true;
+			}
+
+			return false;
+		}
+
+	private:
+		const char* m_pTargetTag = nullptr;
+	};
+
 	class Random
 	{
 	public:
@@ -196,5 +220,19 @@ namespace Engine
 		}
 	};
 
+	class Remove
+	{
+	public:
+		static XMMATRIX Scale(FXMMATRIX TransformMatrix)
+		{
+			XMMATRIX         ResultMatrix = TransformMatrix;
+
+			ResultMatrix.r[0] = XMVector3Normalize(TransformMatrix.r[0]);
+			ResultMatrix.r[1] = XMVector3Normalize(TransformMatrix.r[1]);
+			ResultMatrix.r[2] = XMVector3Normalize(TransformMatrix.r[2]);
+
+			return ResultMatrix;
+		}
 	
+	};
 }

@@ -14,6 +14,7 @@ public:
 	class CComponent*			Get_Component(_uint iLevelIndex, const _tchar* pLayerTag, const _tchar* pComponentTag);
 	class CGameObject*			Get_GameObject(_uint iLevelIndex, const _tchar* pLayerTag, _uint iIndex);
 	list<class CGameObject*>*	Get_GameObjects(_uint iLevelIndex, const _tchar* pLayerTag);
+	size_t						Get_GameObject_ListSize(_uint iLevelIndex, const _tchar* pLayerTag);
 
 public:
 	HRESULT		Reserve_Containers(_uint iNumLevels);

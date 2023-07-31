@@ -302,6 +302,7 @@
     </ClInclude>
     <ClInclude Include="..\Public\Player.h">
       <Filter>02. GameObjects\Character\Player</Filter>
+ </ClInclude>
     <ClInclude Include="..\Public\Effect_Mesh.h">
       <Filter>02. GameObjects\Effect\Effect\Mesh</Filter>
     </ClInclude>
@@ -432,7 +433,7 @@
     </ClCompile>
     <ClCompile Include="..\Private\Player_Tanjiro.cpp">
       <Filter>02. GameObjects\Character\Player\Tanjiro</Filter>
-      </ClInclude>
+      </ClCompile>
     <ClCompile Include="..\Private\Effect.cpp">
       <Filter>02. GameObjects\Effect</Filter>
     </ClCompile>
@@ -447,13 +448,13 @@
     </ClCompile>
     <ClCompile Include="..\Private\EffectPlayer.cpp">
       <Filter>02. GameObjects\Effect\EffectPlayer</Filter>
-      </ClInclude>
+      </ClCompile>
     <ClCompile Include="..\Private\Player.cpp">
       <Filter>02. GameObjects\Character\Player</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\ParticleSystem.cpp">
       <Filter>02. GameObjects\Effect\ParticleSystem</Filter>
-      </ClInclude>
+      </ClCompile>
     <ClCompile Include="..\Private\Character.cpp">
       <Filter>02. GameObjects\Character</Filter>
     </ClCompile>

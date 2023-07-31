@@ -75,6 +75,13 @@ RasterizerState		RS_CULL_CW
 	FrontCounterClockwise = false;
 };
 
+RasterizerState		RS_CULL_NONE
+{
+	FillMode = Solid;
+	CullMode = NONE;
+	FrontCounterClockwise = false;
+};
+
 BlendState	 BS_Default
 {
 	/* [0] : 0¹øÂ° ·»´õÅ¸°Ù¿¡ ±×¸±¶§ ºí·»µùÀ» ÇÒ²¨´Ù ¸»²¨´Ù.*/

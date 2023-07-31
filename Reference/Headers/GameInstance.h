@@ -51,6 +51,7 @@ public: /*for Object_Manager*/
     class CComponent*           Get_Component(_uint iLevelIndex, const _tchar * pLayerTag, const _tchar * pComponentTag);
     class CGameObject*          Get_GameObject(_uint iLevelIndex, const _tchar * pLayerTag, _uint iIndex = 0);
     list<class CGameObject*>*   Get_GameObjects(_uint iLevelIndex, const _tchar * pLayerTag);
+    size_t						Get_GameObject_ListSize(_uint iLevelIndex, const _tchar * pLayerTag);
     HRESULT		                Add_Prototype(const _tchar * pPrototypeTag, class CGameObject* pPrototype);
     HRESULT		                Add_GameObject(_uint iLevelIndex, const _tchar * pLayerTag, const _tchar * pPrototypeTag, void* pArg = nullptr, _bool isKeep = false);
     HRESULT		                Add_GameObject(_uint iLevelIndex, const _tchar * pLayerTag, class CGameObject* pGameObject, _bool isKeep = false);
