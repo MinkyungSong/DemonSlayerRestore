@@ -294,9 +294,14 @@
     <ClInclude Include="..\Public\AtkCollManager.h">
       <Filter>02. GameObjects\AtkCollider\Manager</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Player_Tanjiro.h">
+      <Filter>02. GameObjects\Character\Player\Tanjiro</Filter>
+      </ClInclude>
     <ClInclude Include="..\Public\Effect.h">
       <Filter>02. GameObjects\Effect</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Player.h">
+      <Filter>02. GameObjects\Character\Player</Filter>
     <ClInclude Include="..\Public\Effect_Mesh.h">
       <Filter>02. GameObjects\Effect\Effect\Mesh</Filter>
     </ClInclude>
@@ -311,6 +316,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\ParticleSystem.h">
       <Filter>02. GameObjects\Effect\ParticleSystem</Filter>
+      </ClInclude>
+    <ClInclude Include="..\Public\Character.h">
+      <Filter>02. GameObjects\Character</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -422,6 +430,9 @@
     <ClCompile Include="..\Private\AtkCollManager.cpp">
       <Filter>02. GameObjects\AtkCollider\Manager</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Player_Tanjiro.cpp">
+      <Filter>02. GameObjects\Character\Player\Tanjiro</Filter>
+      </ClInclude>
     <ClCompile Include="..\Private\Effect.cpp">
       <Filter>02. GameObjects\Effect</Filter>
     </ClCompile>
@@ -436,9 +447,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\EffectPlayer.cpp">
       <Filter>02. GameObjects\Effect\EffectPlayer</Filter>
+      </ClInclude>
+    <ClCompile Include="..\Private\Player.cpp">
+      <Filter>02. GameObjects\Character\Player</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\ParticleSystem.cpp">
       <Filter>02. GameObjects\Effect\ParticleSystem</Filter>
+      </ClInclude>
+    <ClCompile Include="..\Private\Character.cpp">
+      <Filter>02. GameObjects\Character</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

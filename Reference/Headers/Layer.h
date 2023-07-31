@@ -15,9 +15,6 @@ public:
 	list<class CGameObject*>*	Get_GameObjects() {		//레이어의 객체 list(모든 객체들) 리턴
 		return &m_GameObjects;
 	}
-	size_t Get_ListSize(void) {							//레이어의 list size 리턴
-		return m_GameObjects.size();
-	}
 
 public:
 	void Set_Keep(_bool isKeep) {

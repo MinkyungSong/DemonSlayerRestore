@@ -135,13 +135,27 @@ void CPlayer::Dir_Setting(_bool Reverse)
 	Safe_Release(pGameInstance);
 }
 
+void CPlayer::Trigger_Hit(_double dTimeDelta)
+{
+	CGameInstance* pGameInstance = CGameInstance::GetInstance();
+	Safe_AddRef(pGameInstance);
+	
+	//임시 히트
+	if (pGameInstance->Get_DIKeyDown(DIK_Z))
+	{
+		m_Moveset.m_Down_Dmg_Small = true;
+	}
+
+	Safe_Release(pGameInstance);
+}
+
 void CPlayer::Key_Input(_double dTimeDelta)
 {
 	CGameInstance* pGameInstance = CGameInstance::GetInstance();
 	Safe_AddRef(pGameInstance);
 
 #pragma region Test
-	/*if (pGameInstance->Get_DIKeyState(DIK_HOME) & 0x80)
+	if (pGameInstance->Get_DIKeyState(DIK_HOME) & 0x80)
 	{
 		++m_iNumAnim;
 		if (m_pModelCom->Get_NumAnims() <= m_iNumAnim)
@@ -156,25 +170,38 @@ void CPlayer::Key_Input(_double dTimeDelta)
 		if (0 > m_iNumAnim)
 			m_iNumAnim = 0;
 		m_pModelCom->Set_Animation(m_iNumAnim);
-	}*/
+	}
+
+	if (pGameInstance->Get_DIKeyDown(DIK_V))
+	{
+		m_isSpecialHit = true;
+	}
 	//m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), -dTimeDelta);
 #pragma endregion
 
-	Key_Input_Battle_Move(dTimeDelta);
+	Trigger_Hit(dTimeDelta);
 
-	Key_Input_Battle_Jump(dTimeDelta);
+	if (m_Moveset.m_isHitMotion == false)
+	{
+		Key_Input_Battle_Move(dTimeDelta);
 
-	Key_Input_Battle_Attack(dTimeDelta);
+		Key_Input_Battle_Jump(dTimeDelta);
 
-	Key_Input_Battle_ChargeAttack(dTimeDelta);
+		Key_Input_Battle_Attack(dTimeDelta);
 
-	Key_Input_Battle_Skill(dTimeDelta);
+		Key_Input_Battle_ChargeAttack(dTimeDelta);
 
-	Key_Input_Battle_Guard(dTimeDelta);
+		Key_Input_Battle_Skill(dTimeDelta);
 
-	Key_Input_Battle_Dash(dTimeDelta);
+		Key_Input_Battle_Guard(dTimeDelta);
 
+		Key_Input_Battle_Dash(dTimeDelta);
 
+		Key_Input_Battle_Awaken(dTimeDelta);
+
+		Key_Input_Battle_Special(dTimeDelta);
+
+	}
 	Safe_Release(pGameInstance);
 }
 
@@ -438,7 +465,7 @@ void CPlayer::Key_Input_Battle_Guard(_double dTimeDelta)
 
 		if (pGameInstance->Get_DIKeyUp(DIK_O))
 		{
-			if (m_Moveset.m_isRestrict_Jump == false)
+			if (m_Moveset.m_isRestrict_Jump == false && m_Moveset.m_isRestrict_KeyInput == false)
 				m_Moveset.m_Up_Battle_Guard = true;
 		}
 	}
@@ -488,21 +515,25 @@ void CPlayer::Key_Input_Battle_Dash(_double dTimeDelta)
 		//스텝
 		if (pGameInstance->Get_DIKeyState(DIK_W) || pGameInstance->Get_DIKeyState(DIK_S) || pGameInstance->Get_DIKeyState(DIK_A) || pGameInstance->Get_DIKeyState(DIK_D))
 		{
-			if (m_Moveset.m_isRestrict_Step == false)
+			if (m_Moveset.m_isRestrict_DoubleStep == false)
 			{
-				Dir_Setting(true);
-				XMStoreFloat4(&m_vLook, vLook);
-				m_Moveset.m_Down_Battle_Step = true;
-
-				if (pGameInstance->Get_DIKeyState(DIK_W))
+				if (pGameInstance->Get_DIKeyState(DIK_W) && m_Moveset.m_isRestrict_Step == false)
 				{
+					Dir_Setting(true);
+					XMStoreFloat4(&m_vLook, vLook);
+					m_Moveset.m_Down_Battle_Step = true;
+
 					m_isForward = true;
 					m_isBack = false;
 					m_isLeft = false;
 					m_isRight = false;
 				}
-				else if (pGameInstance->Get_DIKeyState(DIK_S))
+				else if (pGameInstance->Get_DIKeyState(DIK_S) && m_Moveset.m_isRestrict_Step == false)
 				{
+					Dir_Setting(true);
+					XMStoreFloat4(&m_vLook, vLook);
+					m_Moveset.m_Down_Battle_Step = true;
+
 					m_isForward = false;
 					m_isBack = true;
 					m_isLeft = false;
@@ -510,6 +541,11 @@ void CPlayer::Key_Input_Battle_Dash(_double dTimeDelta)
 				}
 				else if (pGameInstance->Get_DIKeyState(DIK_A))
 				{
+					Dir_Setting(true);
+					XMStoreFloat4(&m_vLook, vLook);
+
+					m_Moveset.m_Down_Battle_Step = true;
+
 					m_isForward = false;
 					m_isBack = false;
 					m_isLeft = true;
@@ -517,6 +553,10 @@ void CPlayer::Key_Input_Battle_Dash(_double dTimeDelta)
 				}
 				else if (pGameInstance->Get_DIKeyState(DIK_D))
 				{
+					Dir_Setting(true);
+					XMStoreFloat4(&m_vLook, vLook);
+					m_Moveset.m_Down_Battle_Step = true;
+
 					m_isForward = false;
 					m_isBack = false;
 					m_isLeft = false;
@@ -531,6 +571,61 @@ void CPlayer::Key_Input_Battle_Dash(_double dTimeDelta)
 			{
 				XMStoreFloat4(&m_Moveset.m_Input_Dir, vLook);
 				m_Moveset.m_Down_Battle_Dash = true;
+			}
+		}
+	}
+
+	Safe_Release(pGameInstance);
+}
+
+void CPlayer::Key_Input_Battle_Awaken(_double dTimeDelta)
+{
+	CGameInstance* pGameInstance = CGameInstance::GetInstance();
+	Safe_AddRef(pGameInstance);
+
+	if (m_Moveset.m_iAwaken != 0)
+	{
+		m_Moveset.m_dTime_Awaken_Duration -= dTimeDelta;
+
+		if (m_Moveset.m_dTime_Awaken_Duration <= 0.0)
+		{
+			m_Moveset.m_dTime_Awaken_Duration = 10.0;
+			m_Moveset.m_iAwaken = 0;
+		}
+	}
+
+	if (pGameInstance->Get_DIKeyDown(DIK_Q))
+	{
+		m_Moveset.m_Down_Battle_Awaken = true;
+
+		if (m_Moveset.m_iAwaken == 0)
+		{
+			m_Moveset.m_iAwaken = 1;
+			m_Moveset.m_dTime_Awaken_Duration = 10.0;
+		}
+		else if (m_Moveset.m_iAwaken == 1)
+		{
+			m_Moveset.m_iAwaken = 2;
+			m_Moveset.m_dTime_Awaken_Duration = 10.0;
+		}
+	}
+
+
+	Safe_Release(pGameInstance);
+}
+
+void CPlayer::Key_Input_Battle_Special(_double dTimeDelta)
+{
+	CGameInstance* pGameInstance = CGameInstance::GetInstance();
+	Safe_AddRef(pGameInstance);
+
+	if (m_Moveset.m_isRestrict_Special == false)
+	{
+		if (m_Moveset.m_isRestrict_Step == false)
+		{
+			if (pGameInstance->Get_DIKeyDown(DIK_E))
+			{
+				m_Moveset.m_Down_Battle_Special = true;
 			}
 		}
 	}

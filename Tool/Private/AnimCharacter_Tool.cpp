@@ -49,14 +49,14 @@ HRESULT CAnimCharacter_Tool::Initialize(void* pArg)
 	
 		//여기서 
 		char szFullPath[MAX_PATH] = { "" };
-		// 수정 필요
-		strcpy_s(szFullPath, "../../Client/Bin/Resources/AnimToolBin/Tanjiro.bin");
+		//★ 수정 필요
+		strcpy_s(szFullPath, "../../Client/Bin/Resources/AnimToolBin/Akaza.bin");
 
 		ifstream fin;
 		fin.open(szFullPath, ios::binary);
 		if (false == fin.is_open())
 		{
-			MSG_BOX("Faield to open : Tanjiro Anim Data");
+			MSG_BOX("Faield to open : Anim Data");
 			//return E_FAIL;
 		}
 
@@ -150,6 +150,7 @@ HRESULT CAnimCharacter_Tool::Render()
 
 		m_pShaderCom->Begin(0);
 
+		//if(m_iTest != i)
 		m_pModelCom->Render(i);
 	}
 
@@ -182,13 +183,14 @@ void CAnimCharacter_Tool::ImGUI_Control(_double dTimeDelta)
 
 			m_vecName.emplace_back(pNewName);
 
-			// Imgui 초기값 넣어주기.
-			
-			//CAnimation::CONTROLDESC control = pAnim->Get_ControlDesc();
-			// Connect 초기값 넣어주기.
-			//control.m_iConnect_Anim = index;
 
+			// Imgui 초기값 넣어주기.
+			// ★Connect 초기값 넣어주기.
+			//CAnimation::CONTROLDESC control = pAnim->Get_ControlDesc();
+			//control.m_iConnect_Anim = index;
 			//pAnim->Set_ControlDesc(control);
+
+
 			index++;
 		}
 		m_pImGui_Anim->Set_vecName(m_vecName);
@@ -262,7 +264,7 @@ void CAnimCharacter_Tool::Save_Animations()
 	char FindFile[MAX_PATH] = { "" };
 	WIN32_FIND_DATAA fdFind;
 	//★
-	HANDLE hFindOut = ::FindFirstFileA("../../Client/Bin/Resources/Models/Tanjiro/*.bin", &fdFind);
+	HANDLE hFindOut = ::FindFirstFileA("../../Client/Bin/Resources/Character/Models/Akaza/*.bin", &fdFind);
 	if (hFindOut != INVALID_HANDLE_VALUE)
 	{
 		do
@@ -337,6 +339,17 @@ void CAnimCharacter_Tool::KeyInput(_double dTimeDelta)
 			m_iNumAnim = 0;
 		m_pModelCom->Set_Animation(m_iNumAnim);
 	}
+
+	if (pGameInstance->Get_DIKeyDown(DIK_LEFTARROW))
+	{
+		m_iTest--;
+	}
+	else if (pGameInstance->Get_DIKeyDown(DIK_RIGHTARROW))
+	{
+		m_iTest++;
+	}
+
+
 
 	if (pGameInstance->Get_DIKeyState(DIK_NUMPAD8))
 	{
@@ -427,7 +440,7 @@ void CAnimCharacter_Tool::Event_Call(_double dTimeDelta)
 HRESULT CAnimCharacter_Tool::Add_Components()
 {
 	// for.Com_Model 
-	if (FAILED(__super::Add_Component(LEVEL_TOOL, TEXT("Prototype_Component_Model_Tanjiro"),
+	if (FAILED(__super::Add_Component(LEVEL_TOOL, TEXT("Prototype_Component_Model_Akaza"),
 		TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 	{
 		MSG_BOX("Failed to Add_Com_Model : CAnimCharacter_Tool");

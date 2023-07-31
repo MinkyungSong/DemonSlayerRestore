@@ -61,11 +61,11 @@ void CPlayer_Tanjiro::Tick(_double dTimeDelta)
 
 	//이벤트 콜
 	EventCall_Control(dTimeDelta);
-	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOWDEPTH, this)))
-		return;
+
 	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this)))
 		return;
-	
+	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOWDEPTH, this)))
+		return;
 }
 
 void CPlayer_Tanjiro::LateTick(_double dTimeDelta)
@@ -131,13 +131,12 @@ HRESULT CPlayer_Tanjiro::Render_ShadowDepth()
 	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
 		return E_FAIL;
 
-	/*CGameInstance* pGameInstance = CGameInstance::GetInstance();
-	Safe_AddRef(pGameInstance);
+	CGameInstance* pGameInstance = CGameInstance::GetInstance();
+
 
 	_vector vPlayerPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 
-	_vector	vLightEye = vPlayerPos + XMVectorSet(-5.f, 10.f, -5.f, 1.f);*/
-	_vector	vLightEye = XMVectorSet(130.f, 10.f, 140.f, 1.f);
+	_vector	vLightEye = XMVectorSet(-5.f, 10.f, -5.f, 1.f);
 	_vector	vLightAt = XMVectorSet(60.f, 0.f, 60.f, 1.f);
 	_vector	vLightUp = XMVectorSet(0.f, 1.f, 0.f, 1.f);
 
@@ -184,36 +183,66 @@ HRESULT CPlayer_Tanjiro::Render_ShadowDepth()
 
 void CPlayer_Tanjiro::EventCall_Control(_double dTimeDelta)
 {
+	CAnimation* pAnim = m_pModelCom->Get_Animation();
+	if (pAnim->Get_AnimationDesc().m_dTimeAcc == 0)
+	{
+		m_iEvent_Index = 0;
+	}
+
 	if (EventCallProcess())
 	{
 #pragma region Combo_Attack
 		if (ANIM_ATK_COMBO == m_pModelCom->Get_iCurrentAnimIndex())
 		{
-			_tchar szTest[MAX_PATH] = TEXT("TestSound.wav");
-			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::PLAYER_SLASH);
-			CSoundMgr::Get_Instance()->PlaySound(szTest, CSoundMgr::PLAYER_SLASH, 0.9f);
+			if (0 == m_iEvent_Index)
+			{
+				_tchar szTest[MAX_PATH] = TEXT("TestSound.wav");
+				CSoundMgr::Get_Instance()->StopSound(CSoundMgr::PLAYER_SLASH);
+				CSoundMgr::Get_Instance()->PlaySound(szTest, CSoundMgr::PLAYER_SLASH, 0.9f);
+			}
 
 			CEffectPlayer::Get_Instance()->Play("hjd", m_pTransformCom);
 		}
 		if (22 == m_pModelCom->Get_iCurrentAnimIndex())
 		{
-			_tchar szTest[MAX_PATH] = TEXT("TestSound.wav");
-			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::PLAYER_SLASH);
-			CSoundMgr::Get_Instance()->PlaySound(szTest, CSoundMgr::PLAYER_SLASH, 0.9f);
+			if (0 == m_iEvent_Index)
+			{
+				_tchar szTest[MAX_PATH] = TEXT("TestSound.wav");
+				CSoundMgr::Get_Instance()->StopSound(CSoundMgr::PLAYER_SLASH);
+				CSoundMgr::Get_Instance()->PlaySound(szTest, CSoundMgr::PLAYER_SLASH, 0.9f);
+			}
+			else if (1 == m_iEvent_Index)
+			{
+				_tchar szTest[MAX_PATH] = TEXT("TestSound.wav");
+				CSoundMgr::Get_Instance()->StopSound(CSoundMgr::PLAYER_SLASH);
+				CSoundMgr::Get_Instance()->PlaySound(szTest, CSoundMgr::PLAYER_SLASH, 0.9f);
+			}
+			
 		}
 		if (23 == m_pModelCom->Get_iCurrentAnimIndex())
 		{
-			_tchar szTest[MAX_PATH] = TEXT("TestSound.wav");
-			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::PLAYER_SLASH);
-			CSoundMgr::Get_Instance()->PlaySound(szTest, CSoundMgr::PLAYER_SLASH, 0.9f);
+			if (0 == m_iEvent_Index)
+			{
+				_tchar szTest[MAX_PATH] = TEXT("TestSound.wav");
+				CSoundMgr::Get_Instance()->StopSound(CSoundMgr::PLAYER_SLASH);
+				CSoundMgr::Get_Instance()->PlaySound(szTest, CSoundMgr::PLAYER_SLASH, 0.9f);
+			}
 		}
 		if (25 == m_pModelCom->Get_iCurrentAnimIndex())
 		{
-			_tchar szTest[MAX_PATH] = TEXT("TestSound.wav");
-			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::PLAYER_SLASH);
-			CSoundMgr::Get_Instance()->PlaySound(szTest, CSoundMgr::PLAYER_SLASH, 0.9f);
+			if (0 == m_iEvent_Index)
+			{
+				_tchar szTest[MAX_PATH] = TEXT("TestSound.wav");
+				CSoundMgr::Get_Instance()->StopSound(CSoundMgr::PLAYER_SLASH);
+				CSoundMgr::Get_Instance()->PlaySound(szTest, CSoundMgr::PLAYER_SLASH, 0.9f);
+			}
+		}
+		if (ANIM_ATK_SPECIAL_CUTSCENE == m_pModelCom->Get_iCurrentAnimIndex())
+		{
+			
 		}
 #pragma endregion
+		m_iEvent_Index++;
 	}
 }
 
@@ -223,19 +252,28 @@ void CPlayer_Tanjiro::Animation_Control(_double dTimeDelta)
 
 	Moving_Restrict();
 
-	Animation_Control_Battle_Jump(dTimeDelta);
+	Animation_Control_Battle_Dmg(dTimeDelta);
 
-	Animation_Control_Battle_Move(dTimeDelta);
+	if (m_Moveset.m_isHitMotion == false)
+	{
+		Animation_Control_Battle_Jump(dTimeDelta);
 
-	Animation_Control_Battle_Attack(dTimeDelta);
+		Animation_Control_Battle_Move(dTimeDelta);
 
-	Animation_Control_Battle_Charge(dTimeDelta);
+		Animation_Control_Battle_Attack(dTimeDelta);
 
-	Animation_Control_Battle_Skill(dTimeDelta);
+		Animation_Control_Battle_Charge(dTimeDelta);
 
-	Animation_Control_Battle_Guard(dTimeDelta);
+		Animation_Control_Battle_Skill(dTimeDelta);
 
-	Animation_Control_Battle_Dash(dTimeDelta);
+		Animation_Control_Battle_Guard(dTimeDelta);
+
+		Animation_Control_Battle_Dash(dTimeDelta);
+
+		Animation_Control_Battle_Awaken(dTimeDelta);
+
+		Animation_Control_Battle_Special(dTimeDelta);
+	}
 }
 
 void CPlayer_Tanjiro::Animation_Control_Battle_Move(_double dTimeDelta)
@@ -411,7 +449,7 @@ void CPlayer_Tanjiro::Animation_Control_Battle_Attack(_double dTimeDelta)
 	Go_Straight_Deceleration(dTimeDelta, 22, 3.0f, 0.16f);
 	Go_Straight_Deceleration(dTimeDelta, 23, 4.0f, 0.11f);
 	//분기
-	Go_Straight_Deceleration(dTimeDelta, 24, 4.0f, 0.10f); // Down
+	Go_Straight_Deceleration(dTimeDelta, 24, 3.2f, 0.05f); // Down
 	Go_Straight_Deceleration(dTimeDelta, 25, 5.0f, 0.35f); // Normal
 	Go_Straight_Deceleration(dTimeDelta, 26, 3.0f, 0.29f); // Up
 
@@ -551,15 +589,141 @@ void CPlayer_Tanjiro::Animation_Control_Battle_Dash(_double dTimeDelta)
 			m_pModelCom->Set_Animation(ANIM_BATTLE_STEP_F);
 		else if(m_isBack)
 			m_pModelCom->Set_Animation(ANIM_BATTLE_STEP_B);
-		else if (m_isLeft)
-			m_pModelCom->Set_Animation(ANIM_BATTLE_STEP_L);
-		else if (m_isRight)
-			m_pModelCom->Set_Animation(ANIM_BATTLE_STEP_R);
+		else
+		{
+			if (m_isLeft)
+			{
+				//콤보 첫 애니메이션 설정
+				if (m_pModelCom->Get_Combo_Doing() == false)
+				{
+					m_pModelCom->Set_Combo_Doing(true);
+					m_pModelCom->Set_Animation(ANIM_BATTLE_STEP_L);
+				}
+				//아닐경우, 다음 콤보로 진행
+				else
+				{
+					m_pModelCom->Set_Combo_Trigger(true);
+					Jumping(3.0f, 0.25f);
+				}
+			}
+			else if (m_isRight)
+			{
+				//콤보 첫 애니메이션 설정
+				if (m_pModelCom->Get_Combo_Doing() == false)
+				{
+					m_pModelCom->Set_Combo_Doing(true);
+					m_pModelCom->Set_Animation(ANIM_BATTLE_STEP_R);
+				}
+				//아닐경우, 다음 콤보로 진행
+				else
+				{
+					m_pModelCom->Set_Combo_Trigger(true);
+					Jumping(3.0f, 0.25f);
+				}
+			}
+		}
 	}
 	_vector vDir = XMLoadFloat4(&m_Moveset.m_Input_Dir);
 	_float4 fDir;
 	XMStoreFloat4(&fDir, -vDir);
-	Go_Dir_Deceleration(dTimeDelta, ANIM_BATTLE_STEP_F, 4.0f, 0.1f, fDir);
+	Go_Dir_Deceleration(dTimeDelta, ANIM_BATTLE_STEP_F, 4.5f, 0.15f, m_Moveset.m_Input_Dir);
+	Go_Dir_Deceleration(dTimeDelta, ANIM_BATTLE_STEP_B, 4.5f, 0.15f, m_Moveset.m_Input_Dir);
+	Go_Dir_Deceleration(dTimeDelta, ANIM_BATTLE_STEP_L, 4.5f, 0.15f, m_Moveset.m_Input_Dir);
+	Go_Dir_Deceleration(dTimeDelta, ANIM_BATTLE_STEP_R, 4.5f, 0.15f, m_Moveset.m_Input_Dir);
+
+	//더블스텝
+	Go_Dir_Deceleration(dTimeDelta, 98, 5.0f, 0.15f, m_Moveset.m_Input_Dir);
+	Go_Dir_Deceleration(dTimeDelta, 100, 5.0f, 0.15f, m_Moveset.m_Input_Dir);
+}
+
+void CPlayer_Tanjiro::Animation_Control_Battle_Awaken(_double dTimeDelta)
+{
+	if (m_Moveset.m_Down_Battle_Awaken)
+	{
+		m_Moveset.m_Down_Battle_Awaken = false;
+
+		if (m_Moveset.m_iAwaken == 1)
+		{
+			m_pModelCom->Set_Animation(ANIM_BATTLE_AWAKEN);
+		}
+		else if (m_Moveset.m_iAwaken == 2)
+		{
+			m_pModelCom->Set_Animation(ANIM_BATTLE_AWAKEN_COMPLETE_CUTSCENE);
+		}
+	}
+}
+
+void CPlayer_Tanjiro::Animation_Control_Battle_Special(_double dTimeDelta)
+{
+	if (m_Moveset.m_Down_Battle_Special)
+	{
+		m_Moveset.m_Down_Battle_Special = false;
+
+		m_pModelCom->Set_Animation(ANIM_ATK_SPECIAL_READY);
+		m_dTime_Special_Ready = 0.0;
+	}
+	m_dTime_Special_Ready += dTimeDelta;
+	if(m_dTime_Special_Ready >1.5f)
+		Go_Straight_Deceleration(dTimeDelta, 109, 4.0f, 0.23f);
+	
+	//Go_Straight_Constant(dTimeDelta, 108, 2.7f);
+	if (m_pModelCom->Get_iCurrentAnimIndex() == 108 || m_pModelCom->Get_iCurrentAnimIndex() == 109)
+	{
+		if (m_isSpecialHit)
+		{
+			m_isSpecialHit = false;
+			m_isFirst_Special_Jump = true;
+
+			m_pModelCom->Set_Animation(ANIM_ATK_SPECIAL_CUTSCENE);
+			m_dTime_Special_CutScene = 0.0;
+		}
+	}
+	m_dTime_Special_CutScene += dTimeDelta;
+
+	Go_Straight_Constant(dTimeDelta, ANIM_ATK_SPECIAL_CUTSCENE, 1.0f);
+	if (0.90f <= m_dTime_Special_CutScene)
+	{
+		Go_Left_Deceleration(dTimeDelta, ANIM_ATK_SPECIAL_CUTSCENE, 10.0f, 0.1f);
+	}
+	else if (0.65f <= m_dTime_Special_CutScene)
+	{
+		Go_Right_Deceleration(dTimeDelta, ANIM_ATK_SPECIAL_CUTSCENE, 10.0f, 0.1f);
+	}
+	else if (0.35f <= m_dTime_Special_CutScene )
+	{
+		Go_Left_Deceleration(dTimeDelta, ANIM_ATK_SPECIAL_CUTSCENE, 10.0f, 0.1f);
+	}
+
+	if (m_pModelCom->Get_iCurrentAnimIndex() == 103 && m_isFirst_Special_Jump)
+	{
+		m_isFirst_Special_Jump = false;
+		Jumping(2.65f, 0.025f);
+	}
+	
+	if (m_pModelCom->Get_iCurrentAnimIndex() == 106 && m_isSecond_Special_Jump)
+	{
+		m_isSecond_Special_Jump = false;
+		Jumping(1.0f, 0.08f);
+	}
+	Go_Straight_Deceleration(-dTimeDelta, 106, 1.0f, 0.01f);
+}
+
+void CPlayer_Tanjiro::Animation_Control_Battle_Dmg(_double dTimeDelta)
+{
+	if (m_Moveset.m_Down_Dmg_Small)
+	{
+		m_Moveset.m_Down_Dmg_Small = false;
+
+		m_pModelCom->Set_Animation(ANIM_DMG_SMALL);
+		m_Moveset.m_isHitMotion = true;
+	}
+	if (m_pModelCom->Get_AnimFinish(ANIM_DMG_SMALL))
+	{
+		m_Moveset.m_isHitMotion = false;
+	}
+
+
+	
 }
 
 void CPlayer_Tanjiro::Moving_Restrict()
@@ -607,14 +771,34 @@ void CPlayer_Tanjiro::Moving_Restrict()
 	{
 		m_Moveset.m_isRestrict_Move = true;
 		m_Moveset.m_isRestrict_Jump = true;
-		
+	}
+	//Awaken
+	else if (ANIM_BATTLE_AWAKEN == iCurAnimIndex || ANIM_BATTLE_AWAKEN_COMPLETE_CUTSCENE == iCurAnimIndex )
+	{
+		m_Moveset.m_isRestrict_Move = true;
+		m_Moveset.m_isRestrict_KeyInput = true;
+		m_Moveset.m_isRestrict_Jump = true;
+		m_Moveset.m_isRestrict_Charge = true;
+		m_Moveset.m_isRestrict_Step = true;
+		m_Moveset.m_isRestrict_Dash = true;
+	}
+	//Special
+	else if (ANIM_ATK_SPECIAL_CUTSCENE == iCurAnimIndex || 102 == iCurAnimIndex || 103 == iCurAnimIndex || 104 == iCurAnimIndex || 105 == iCurAnimIndex || 106 == iCurAnimIndex
+		|| ANIM_ATK_SPECIAL_READY == iCurAnimIndex || 108 == iCurAnimIndex || 109 == iCurAnimIndex)
+	{
+		m_Moveset.m_isRestrict_Move = true;
+		m_Moveset.m_isRestrict_KeyInput = true;
+		m_Moveset.m_isRestrict_Jump = true;
+		m_Moveset.m_isRestrict_Charge = true;
+		m_Moveset.m_isRestrict_Step = true;
+		m_Moveset.m_isRestrict_Dash = true;
+		m_Moveset.m_isRestrict_Special = true;
 	}
 	//가드 시 제한
 	else if (ANIM_BATTLE_GUARD == iCurAnimIndex || 64 == iCurAnimIndex || 65 == iCurAnimIndex
 		|| ANIM_BATTLE_GUARD_HIT_BIG == iCurAnimIndex || ANIM_BATTLE_GUARD_HIT_SMALL == iCurAnimIndex || ANIM_BATTLE_GUARD_PUSH == iCurAnimIndex)
 	{
 		m_Moveset.m_isRestrict_Move = true;
-		//m_Moveset.m_isRestrict_KeyInput = true;
 	}
 	//대시 시 제한
 	else if (ANIM_BATTLE_DASH == iCurAnimIndex || 80 == iCurAnimIndex || 81 == iCurAnimIndex)
@@ -632,12 +816,19 @@ void CPlayer_Tanjiro::Moving_Restrict()
 	}
 	//스텝 시 제한
 	else if (ANIM_BATTLE_STEP_AB == iCurAnimIndex || ANIM_BATTLE_STEP_AF == iCurAnimIndex || ANIM_BATTLE_STEP_AL == iCurAnimIndex || ANIM_BATTLE_STEP_AR == iCurAnimIndex
-		|| ANIM_BATTLE_STEP_B == iCurAnimIndex || ANIM_BATTLE_STEP_F == iCurAnimIndex || ANIM_BATTLE_STEP_L == iCurAnimIndex || ANIM_BATTLE_STEP_R == iCurAnimIndex
-		|| 98 == iCurAnimIndex || 100 == iCurAnimIndex)
+		|| ANIM_BATTLE_STEP_B == iCurAnimIndex || ANIM_BATTLE_STEP_F == iCurAnimIndex || ANIM_BATTLE_STEP_L == iCurAnimIndex || ANIM_BATTLE_STEP_R == iCurAnimIndex)
 	{
 		m_Moveset.m_isRestrict_Move = true;
 		m_Moveset.m_isRestrict_KeyInput = true;
 		m_Moveset.m_isRestrict_Step = true;
+	}
+	//더블스텝 시 제한
+	else if ( 98 == iCurAnimIndex || 100 == iCurAnimIndex)
+	{
+		m_Moveset.m_isRestrict_Move = true;
+		m_Moveset.m_isRestrict_KeyInput = true;
+		
+		m_Moveset.m_isRestrict_DoubleStep = true;
 	}
 	//제한 해제d
 	else
@@ -650,6 +841,8 @@ void CPlayer_Tanjiro::Moving_Restrict()
 		m_Moveset.m_isRestrict_Charge = false;
 		m_Moveset.m_isRestrict_Dash = false;
 		m_Moveset.m_isRestrict_Step = false;
+		m_Moveset.m_isRestrict_DoubleStep = false;
+		m_Moveset.m_isRestrict_Special = false;
 	}
 }
 

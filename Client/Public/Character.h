@@ -46,12 +46,15 @@ protected:
 
 	//이동 관련
 	void	Go_Straight_Deceleration(_double dTimeDelta, _int AnimIndex, _float ResetSpeed, _float fDecrease);
+	void	Go_Left_Deceleration(_double dTimeDelta, _int AnimIndex, _float ResetSpeed, _float fDecrease);
+	void	Go_Right_Deceleration(_double dTimeDelta, _int AnimIndex, _float ResetSpeed, _float fDecrease);
 	void	Go_Dir_Deceleration(_double dTimeDelta, _int AnimIndex, _float ResetSpeed, _float fDecrease, _float4 Dir);
 	void	Go_Straight_Constant(_double dTimeDelta, _int AnimIndex, _float constantSpeed);
 	void	Gravity(_double dTimeDelta);
 	void	Ground_Animation_Play(_int CurAnim, _int GroundAnim);
 	void	Jumping( _float ResetSpeed, _float fFallDecrease);
 	void	JumpStop(_double dDuration);
+
 
 protected:
 	void	Set_FallingStatus(_float fFallSpeed, _float fGravityAcc) { m_fJump_Acc = -fFallSpeed; m_fGravity_Fall = fGravityAcc; }
@@ -85,6 +88,9 @@ protected:
 	_double	m_dTime_JumpStop_Duration = { 0.0 };
 
 	_bool	m_isFirst_JumpAtk = { true };
+
+	//EventCallIndex
+	_int	m_iEvent_Index = { 0 };
 
 
 protected:

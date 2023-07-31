@@ -76,6 +76,7 @@ public:
 	
 	vector<KEYFRAME> Get_LastKeys();
 
+
 	//Set
 	void	Set_AnimationDesc(ANIMATIONDESC animdesc) { m_AnimationDesc = animdesc; }
 	void	Reset_TimeAcc() { m_AnimationDesc.m_dTimeAcc = 0.0; }

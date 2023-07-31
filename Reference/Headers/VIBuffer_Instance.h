@@ -18,11 +18,7 @@ public:
 public:
 	virtual void Tick(_double dTimeDelta) = 0;
 	virtual HRESULT Render();
-
 public:
-	void Set_NumInstance(_uint iNum) {
-		m_iNumInstance = iNum;
-	}
 
 protected:
 	_uint			m_iNumIndicesPerInstance = { 0 };
